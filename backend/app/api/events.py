@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
-from app.schemas import EventRead, ScrapeResult, SourceInfo
+from app.schemas import EventRead, ScrapeResult, SourceDiagnostic, SourceInfo
 from app.scrapers import list_sources
+from app.scrapers.discovery import audit_discovered_sources
 from app.services.events import list_events, run_scrapers
 
 router = APIRouter()
@@ -12,6 +13,11 @@ router = APIRouter()
 @router.get("/sources", response_model=list[SourceInfo])
 def get_sources():
     return list_sources()
+
+
+@router.get("/source-diagnostics", response_model=list[SourceDiagnostic])
+async def get_source_diagnostics():
+    return await audit_discovered_sources()
 
 
 @router.get("/events", response_model=list[EventRead])

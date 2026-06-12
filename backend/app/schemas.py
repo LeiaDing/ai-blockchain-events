@@ -46,3 +46,12 @@ class SourceInfo(BaseModel):
     method: str
     configured: bool
     description: str
+
+
+class SourceDiagnostic(BaseModel):
+    url: str
+    status: str
+    detected_format: str | None = None
+    linked_sources: list[str] = Field(default_factory=list)
+    events_found: int = 0
+    error: str | None = None

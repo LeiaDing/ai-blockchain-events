@@ -50,6 +50,7 @@ Useful endpoints:
 - `GET /health`
 - `GET /api/events`
 - `GET /api/sources`
+- `GET /api/source-diagnostics`
 - `POST /api/scrape`
 
 The SQLite database is created automatically at `backend/events.db`.
@@ -83,6 +84,13 @@ For the simplest setup, place organizer event pages, public calendars, and feed 
 The active collectors run independently, so one failed source does not stop the others. Eventbrite and Luma HTML adapters remain as inactive prototypes because their platform terms require a supported API or permission.
 
 See `SOURCE_STRATEGIES.md` for supported collection methods and source policy.
+
+Additional project references:
+
+- `SOURCE_CATALOG.md`: reviewed organizer sources and latest results
+- `SCRAPING_COMPLIANCE_NOTES.md`: scraping permissions and compliance notes
+- `TROUBLESHOOTING.md`: problems encountered during development and their solutions
+- `PROJECT_NOTES.md`: current progress and suggested next steps
 
 ## Tests
 

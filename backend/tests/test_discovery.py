@@ -3,7 +3,7 @@ import asyncio
 import httpx
 
 from app.core.config import settings
-from app.scrapers.discovery import scrape_discovered_sources
+from app.scrapers.discovery import audit_discovered_sources, scrape_discovered_sources
 
 PAGE_URL = "https://example.com/events"
 ICS_URL = "https://example.com/events.ics"
@@ -86,3 +86,22 @@ def test_auto_discovery_deduplicates_same_event_url(monkeypatch):
     events = asyncio.run(scrape_discovered_sources())
 
     assert [event.title for event in events] == ["Toronto AI Builders"]
+
+
+def test_source_diagnostics_report_format_links_and_count(monkeypatch):
+    async def fake_fetch(url, params=None):
+        if url == PAGE_URL:
+            return make_response(url, HTML, "text/html")
+        if url == ICS_URL:
+            return make_response(url, ICS, "text/calendar")
+        raise AssertionError(f"Unexpected URL: {url}")
+
+    monkeypatch.setattr(settings, "source_urls", PAGE_URL)
+    monkeypatch.setattr("app.scrapers.discovery.fetch_response", fake_fetch)
+
+    diagnostics = asyncio.run(audit_discovered_sources())
+
+    assert diagnostics[0].status == "success"
+    assert diagnostics[0].detected_format == "html"
+    assert diagnostics[0].linked_sources == [ICS_URL]
+    assert diagnostics[0].events_found == 2

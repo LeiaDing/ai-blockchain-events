@@ -19,3 +19,5 @@ The active source list is stored in `backend/.env` under `SOURCE_URLS`. Unsuppor
 ## Latest Real Run
 
 On June 11, 2026, automatic discovery returned 6 clean Vector Institute events. Duplicate Vector events exposed through both JSON-LD and ICS were merged. MaRS's general article RSS feed was detected but intentionally ignored because it was not event-specific.
+
+On June 12, 2026, the source diagnostics endpoint found 5 current Vector Institute events and 2 linked calendar feeds. The other configured organizer pages were reachable and safely skipped because they did not expose supported structured event data.

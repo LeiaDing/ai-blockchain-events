@@ -13,6 +13,8 @@ function formatDate(value) {
 export default function App() {
   const [events, setEvents] = useState([]);
   const [sources, setSources] = useState([]);
+  const [diagnostics, setDiagnostics] = useState([]);
+  const [checkingSources, setCheckingSources] = useState(false);
   const [lastRun, setLastRun] = useState(null);
   const [loading, setLoading] = useState(true);
   const [scraping, setScraping] = useState(false);
@@ -39,6 +41,20 @@ export default function App() {
       setSources(await response.json());
     } catch (err) {
       setError(err.message);
+    }
+  }
+
+  async function checkSourceUrls() {
+    setCheckingSources(true);
+    setError("");
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/source-diagnostics`);
+      if (!response.ok) throw new Error("Unable to inspect source URLs");
+      setDiagnostics(await response.json());
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setCheckingSources(false);
     }
   }
 
@@ -111,6 +127,39 @@ export default function App() {
               );
             })}
           </div>
+          <div className="mt-6 flex items-center justify-between gap-4 border-t border-zinc-200 pt-5">
+            <div>
+              <h3 className="text-sm font-semibold">Configured URLs</h3>
+              <p className="mt-1 text-xs text-zinc-500">Inspect structured formats and event counts for each organizer page.</p>
+            </div>
+            <button
+              className="h-9 rounded-md border border-zinc-300 bg-white px-3 text-sm font-semibold text-zinc-700 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:text-zinc-400"
+              onClick={checkSourceUrls}
+              disabled={checkingSources}
+            >
+              {checkingSources ? "Checking..." : "Check URLs"}
+            </button>
+          </div>
+          {diagnostics.length ? (
+            <div className="mt-4 overflow-hidden rounded-md border border-zinc-200 bg-white">
+              {diagnostics.map((item) => (
+                <div key={item.url} className="grid gap-2 border-b border-zinc-200 px-4 py-3 last:border-b-0 md:grid-cols-[1fr_110px_100px_90px] md:items-center">
+                  <div className="min-w-0">
+                    <a className="block truncate text-sm font-medium text-signal hover:text-teal-800" href={item.url} target="_blank" rel="noreferrer">
+                      {item.url}
+                    </a>
+                    {item.error ? <p className="mt-1 truncate text-xs text-red-700">{item.error}</p> : null}
+                    {item.linked_sources.length ? <p className="mt-1 text-xs text-zinc-500">{item.linked_sources.length} linked feed{item.linked_sources.length === 1 ? "" : "s"}</p> : null}
+                  </div>
+                  <span className="text-xs uppercase text-zinc-500">{item.detected_format ?? "unknown"}</span>
+                  <span className={`text-xs font-semibold uppercase ${item.status === "success" ? "text-emerald-700" : item.status === "failed" ? "text-red-700" : "text-zinc-500"}`}>
+                    {item.status}
+                  </span>
+                  <span className="text-xs text-zinc-600">{item.events_found} event{item.events_found === 1 ? "" : "s"}</span>
+                </div>
+              ))}
+            </div>
+          ) : null}
         </div>
 
         {loading ? (

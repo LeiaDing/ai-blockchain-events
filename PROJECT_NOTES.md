@@ -79,7 +79,14 @@ C:\Users\Admin\Documents\Codex\2026-06-05\create-a-full-stack-project-called-2\o
   - Only follows page-linked RSS feeds whose URL/title indicates events or calendars.
   - Decodes HTML entities in event titles, locations, and descriptions.
 - Real scrape on June 11, 2026 returned and stored 6 clean Vector Institute events.
-- Backend tests: 4 passed.
+- Backend tests: 5 passed.
+- Added per-URL diagnostics through `GET /api/source-diagnostics`.
+- Frontend can inspect configured URLs and display detected format, linked feeds, status, errors, and event count.
+- Latest real diagnostic on June 12, 2026:
+  - Vector Institute: success, 5 events, 2 linked calendar feeds
+  - MaRS, TechTO, TorontoAI, Schwartz Reisman Institute, and University of Toronto: safely skipped because no supported structured events were found
+- Development problems and solutions are summarized in `TROUBLESHOOTING.md`.
+- Next major phase: deploy the application and scheduler to the cloud.
 
 ## Next Suggested Steps
 
